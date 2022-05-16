@@ -36,19 +36,6 @@ const spec = {
   },
 }
 
-const download = (text) => {
-  const element = document.createElement("a")
-  element.setAttribute(
-    "href",
-    "data:text/plain;charset=utf-8," + encodeURIComponent(text)
-  )
-  element.setAttribute("download", "spec.canvas.js")
-  element.style.display = "none"
-  document.body.appendChild(element)
-  element.click()
-  document.body.removeChild(element)
-}
-
 function App() {
   const {
     views,
@@ -105,11 +92,12 @@ function App() {
 
           <br />
           <div>
-            {views.get("/threads")?.length === 0 && (
-              <div className="mt-4 text-gray-500">
-                Log in to post. Metamask or a browser wallet is required.
-              </div>
-            )}
+            {views.get("/threads") === null ||
+              (views.get("/threads")?.length === 0 && (
+                <div className="mt-4 text-gray-500">
+                  Log in to post. Metamask or a browser wallet is required.
+                </div>
+              ))}
             {views.get("/threads")?.map((row, index) => (
               <div
                 key={index}
@@ -178,7 +166,21 @@ function InfoPanel({ core, views }) {
                 {core?.multihash} (
                 <span
                   className="underline cursor-pointer"
-                  onClick={() => download(core?.spec)}
+                  onClick={() => {
+                    const text = core?.spec
+                    if (!text) return
+                    const element = document.createElement("a")
+                    element.setAttribute(
+                      "href",
+                      "data:text/plain;charset=utf-8," +
+                        encodeURIComponent(text)
+                    )
+                    element.setAttribute("download", "spec.canvas.js")
+                    element.style.display = "none"
+                    document.body.appendChild(element)
+                    element.click()
+                    document.body.removeChild(element)
+                  }}
                 >
                   Download
                 </span>
